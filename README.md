@@ -5,4 +5,5 @@
 # steel_faults 코드 소개
 
 Neural_Network.py : 신경망 버전
+
 Clustering.py : K-means, GMM 버전
