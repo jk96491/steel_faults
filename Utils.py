@@ -19,18 +19,15 @@ def convertToTensorInput(input, input_size):
     return torch.FloatTensor(input)
 
 
-def normalize(data):
+def normalize(data, exclude_cols_):
     for i in range(len(data[0])):
-
-        if i == 11 or i ==12 or i == 19 or i == 20 or i ==26:
+        if exclude_cols_.__contains__(i):
             continue
 
         cur_data = data[:, i]
         min, max = cur_data.min() , cur_data.max()
         normalize_data = (cur_data - min) / (max - min)
         data[:, i] = normalize_data
-
-    return data
 
 
 def standardization(data):

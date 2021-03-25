@@ -4,6 +4,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 import numpy as np
 from Utils import SuffleData
+from Utils import normalize
 
 batch_size = 1024
 training_len = 1800
@@ -34,18 +35,6 @@ class Classifier(nn.Module):
         x = self.layer4(x)
         
         return x
-
-
-def normalize(data, exclude_cols_):
-    for i in range(len(data[0])):
-        if exclude_cols_.__contains__(i):
-            continue
-
-        cur_data = data[:, i]
-        min, max = cur_data.min() , cur_data.max()
-        normalize_data = (cur_data - min) / (max - min)
-        data[:, i] = normalize_data
-        data[:, i] = normalize_data
 
 
 model = Classifier().to(device)

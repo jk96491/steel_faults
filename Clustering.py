@@ -10,6 +10,7 @@ import random
 random_Seed = random.randrange(0, 16546)
 marker = ['o', 's', '^', 'x', '*', 's', 'X']
 use_normalize = True
+exclude_cols = [11, 12, 19, 20, 26]
 
 
 def train():
@@ -21,7 +22,7 @@ def train():
     x_data = xy[:, :-n_cluster]
 
     if use_normalize:
-        normalize(x_data)
+        normalize(x_data, exclude_cols)
 
     pandas_data = pd.DataFrame(data=x_data)
 
