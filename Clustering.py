@@ -10,6 +10,7 @@ import random
 random_Seed = random.randrange(0, 16546)
 marker = ['o', 's', '^', 'x', '*', 's', 'X']
 use_normalize = True
+
 exclude_cols = [11, 12, 19, 20, 26]
 
 

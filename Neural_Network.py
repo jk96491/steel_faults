@@ -12,7 +12,7 @@ use_normalize = True
 drop_out = 0.1
 exclude_cols = [11, 12, 19, 20, 26]
 
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
 class Classifier(nn.Module):
     def __init__(self):
@@ -61,7 +61,6 @@ test_len = len(x_test)
 optimizer = optim.Adam(model.parameters(), lr=0.0005)
 
 nb_epochs = 10000
-
 
 for epoch in range(nb_epochs + 1):
     x_train, y_train = SuffleData(x_train, y_train, batch_size)
