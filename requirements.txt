@@ -1,0 +1,4 @@
+sklearn
+pandas
+matplotlib
+torch==1.4.0
