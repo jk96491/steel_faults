@@ -10,7 +10,7 @@ batch_size = 1024
 training_len = 1800
 use_normalize = True
 drop_out = 0.1
-drop_out_AE = 0.0
+drop_out_AE = 0.1
 exclude_cols = [11, 12, 19, 20, 26]
 
 device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
@@ -19,31 +19,34 @@ class AutoEncoder(nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.encoder1 = nn.Sequential(nn.Linear(27, 16),
+        self.encoder_layer_1 = nn.Sequential(nn.Linear(27, 16),
                                     nn.ReLU(),
                                     nn.Dropout(drop_out_AE))
-        self.encoder2 = nn.Sequential(nn.Linear(16, 8),
+        self.encoder_layer_2 = nn.Sequential(nn.Linear(16, 8),
+                                             nn.ReLU(),
+                                             nn.Dropout(drop_out_AE))
+        self.decoder_layer_1 = nn.Sequential(nn.Linear(8, 16),
                                       nn.ReLU(),
                                       nn.Dropout(drop_out_AE))
-
-        self.decoder1 = nn.Sequential(nn.Linear(8, 16),
-                                      nn.ReLU(),
-                                      nn.Dropout(drop_out_AE))
-        self.decoder2 = nn.Sequential(nn.Linear(16, 27),
-                                      nn.ReLU(),
-                                      nn.Dropout(drop_out_AE))
+        self.decoder_layer_2 = nn.Sequential(nn.Linear(16, 27),
+                                             nn.ReLU(),
+                                             nn.Dropout(drop_out_AE))
 
     def forward(self, x):
-        x = self.encoder1(x)
-        x = self.encoder2(x)
-        x = self.decoder1(x)
-        x = self.decoder2(x)
+        x = self.encoder(x)
+        x = self.decoder(x)
 
         return x
 
-    def encoder_output(self, x):
-        x = self.encoder1(x)
-        x = self.encoder2(x)
+    def encoder(self, x):
+        x = self.encoder_layer_1(x)
+        x = self.encoder_layer_2(x)
+
+        return x
+
+    def decoder(self, x):
+        x = self.decoder_layer_1(x)
+        x = self.decoder_layer_2(x)
 
         return x
 
@@ -51,16 +54,16 @@ class AutoEncoder(nn.Module):
 class Classifier(nn.Module):
     def __init__(self):
         super().__init__()
-        self.layer1 = nn.Sequential(nn.Linear(8, 128),
+        self.layer1 = nn.Sequential(nn.Linear(8, 64),
                                     nn.ReLU(),
                                     nn.Dropout(drop_out))
-        self.layer2 = nn.Sequential(nn.Linear(128, 64),
+        self.layer2 = nn.Sequential(nn.Linear(64, 32),
                                     nn.ReLU(),
                                     nn.Dropout(drop_out))
-        self.layer3 = nn.Sequential(nn.Linear(64, 32),
+        self.layer3 = nn.Sequential(nn.Linear(32, 16),
                                     nn.ReLU(),
                                     nn.Dropout(drop_out))
-        self.layer4 = nn.Sequential(nn.Linear(32, 7))
+        self.layer4 = nn.Sequential(nn.Linear(16, 7))
 
     def forward(self, x):
         x = self.layer1(x)
@@ -83,9 +86,9 @@ if use_normalize:
 def train_autoEncoder(x_data, y_data):
     auto_encoder = AutoEncoder().to(device)
 
-    nb_epochs = 5000
+    nb_epochs = 10000
 
-    optimizer = optim.Adam(auto_encoder.parameters(), lr=0.0005)
+    optimizer = optim.Adam(auto_encoder.parameters(), lr=0.001)
 
     for epoch in range(nb_epochs):
         x_train, y_train = SuffleData(x_data, y_data, batch_size)
@@ -123,7 +126,7 @@ def train_NN(x_data, y_data, auto_encoder):
     for epoch in range(nb_epochs + 1):
         x_train, y_train = SuffleData(x_train, y_train, batch_size)
 
-        hypothesis = model(auto_encoder.encoder_output(x_train))
+        hypothesis = model(auto_encoder.encoder(x_train))
         output = torch.max(y_train, 1)[1]
         cost = F.cross_entropy(hypothesis, output)
 
@@ -141,7 +144,7 @@ def train_NN(x_data, y_data, auto_encoder):
         if epoch % 1000 == 0 and epoch is not 0:
             correct_count = 0
             for i in range(test_len):
-                result = torch.argmax(F.softmax(model(auto_encoder.encoder_output(x_test[i]))))
+                result = torch.argmax(F.softmax(model(auto_encoder.encoder(x_test[i]))))
                 answer = torch.argmax(y_test[i])
 
                 if result.item() == answer.item():

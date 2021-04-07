@@ -6,8 +6,8 @@ import numpy as np
 from Utils import SuffleData
 from Utils import normalize
 
-batch_size = 1024
-training_len = 1800
+batch_size = 2048
+training_len = 1500
 use_normalize = True
 drop_out = 0.1
 exclude_cols = [11, 12, 19, 20, 26]
