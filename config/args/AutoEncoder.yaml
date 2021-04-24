@@ -1,0 +1,8 @@
+model_infos:
+  drop_out: 0.0
+  encoder_dims: [16, 8]
+  decoder_dims: [8, 16]
+  latent_dim: 8
+  learning_rate: 0.0005
+
+name: AutoEncoder
