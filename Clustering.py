@@ -11,16 +11,17 @@ random_Seed = random.randrange(0, 16546)
 marker = ['o', 's', '^', 'x', '*', 's', 'X']
 use_normalize = True
 
-exclude_cols = [11, 12, 19, 20, 26]
+#exclude_cols = [11, 12, 19, 20, 26]
 
+exclude_cols = []
 
 def train():
-    algorithm = "GMM"
+    algorithm = "K-Means"
 
-    n_cluster = 7
+    n_cluster = 3
 
-    xy = np.loadtxt('faults.csv', delimiter=',') #1941
-    x_data = xy[:, :-n_cluster]
+    xy = np.loadtxt('Testing.csv', delimiter=',') #1941
+    x_data = xy
 
     if use_normalize:
         normalize(x_data, exclude_cols)

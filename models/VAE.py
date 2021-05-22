@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 from models.AutoEncoder import AutoEncoder
-
+import torch.nn.functional as F
 
 class vae(AutoEncoder):
     def __init__(self, args, device):
@@ -13,6 +13,8 @@ class vae(AutoEncoder):
 
         self.z_mean = None
         self.z_sigma = None
+
+        self.kl_loss = torch.nn.KLDivLoss(reduction='batchmean')
 
     def sampling_latent(self, encoder_output):
         mu = self.enc_mu(encoder_output)
@@ -34,7 +36,7 @@ class vae(AutoEncoder):
     def learn(self, inputs):
         decoder_output = self.forward(inputs)
         latent_loss = self.get_latent_loss(self.z_mean, self.z_sigma)
-        loss = self.mse_loss(decoder_output, inputs) + latent_loss
+        loss = F.binary_cross_entropy_with_logits(decoder_output, inputs) + latent_loss
 
         self.optimizer.zero_grad()
         loss.backward()
