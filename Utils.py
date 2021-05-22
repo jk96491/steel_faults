@@ -58,7 +58,7 @@ def test(test_len, model, x_test, y_test):
 
 
 def generate_data(x_data, x_train, y_train, auto_encoder):
-    for i in range(10):
+    for i in range(20):
         generate_x_data = auto_encoder(x_data).detach()
         x_train = torch.cat([x_train, generate_x_data], dim=0)
         y_train = torch.cat([y_train, y_train], dim=0)
